@@ -4,4 +4,5 @@ export const authValidator = Joi.object({
   email: Joi.string().email().required(),
   role: Joi.string(),
   password: Joi.string().min(6).required(),
+  confirmPassword: Joi.ref('password'),
 }).options({ abortEarly: false })
