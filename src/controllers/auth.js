@@ -1,11 +1,11 @@
-import User from '../models/User'
-import { authValidator } from '../validations/auth'
 import bcryptjs from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import User from '../models/User'
+import { loginValidator, registerValidator } from '../validations/auth'
 
 export const register = async (req, res) => {
   try {
-    const { error } = authValidator.validate(req.body)
+    const { error } = registerValidator.validate(req.body)
     if (error) {
       const message = error.details.map((err) => err.message)
       return res.status(400).json({ message })
@@ -18,7 +18,7 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: 'Email has been registered' })
     }
 
-    const hashPassword = await bcryptjs.hash(password, 1)
+    const hashPassword = await bcryptjs.hash(password, 10)
 
     const data = await User.create({ email, password: hashPassword })
     data.password = undefined
@@ -32,7 +32,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { error } = authValidator.validate(req.body)
+    const { error } = loginValidator.validate(req.body)
     if (error) {
       const message = error.details.map((err) => err.message)
       return res.status(400).json({ message })
@@ -45,7 +45,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Wrong email or password' })
     }
 
-    if (!bcryptjs.compare(password, user.password)) {
+    if (!(await bcryptjs.compare(password, user.password))) {
       return res.status(400).json({ message: 'Wrong email or password' })
     }
 
