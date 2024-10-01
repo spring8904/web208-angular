@@ -6,8 +6,14 @@ export const createValidator = Joi.object({
   description: Joi.string().required(),
   image: Joi.string().required(),
   isShow: Joi.boolean().optional(),
-  startAt: Joi.date().optional(),
-  bidTime: Joi.number().min(15).optional(),
+  startAt: Joi.date().greater('now').optional(),
+  bidTime: Joi.number()
+    .min(15)
+    .when('startAt', {
+      is: Joi.date().greater('now').required(),
+      then: Joi.required(),
+      otherwise: Joi.optional(),
+    }),
   bidPriceMax: Joi.number().optional(),
   bids: Joi.array().items(Joi.string()).optional(),
 }).options({ abortEarly: false })
@@ -18,8 +24,14 @@ export const updateValidator = Joi.object({
   description: Joi.string().optional(),
   image: Joi.string().optional(),
   isShow: Joi.boolean().optional(),
-  startAt: Joi.date().optional(),
-  bidTime: Joi.date().min(15).optional(),
+  startAt: Joi.date().greater('now').optional(),
+  bidTime: Joi.number()
+    .min(15)
+    .when('startAt', {
+      is: Joi.date().greater('now').required(),
+      then: Joi.required(),
+      otherwise: Joi.optional(),
+    }),
   bidPriceMax: Joi.number().optional(),
   bids: Joi.array().items(Joi.string()).optional(),
 }).options({ abortEarly: false })
